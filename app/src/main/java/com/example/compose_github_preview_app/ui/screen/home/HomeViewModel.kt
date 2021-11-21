@@ -26,6 +26,13 @@ class HomeViewModel @Inject constructor(
     private var _repositories: MutableStateFlow<List<Repository>> = MutableStateFlow(listOf())
     val repositories: StateFlow<List<Repository>> get() = _repositories
 
+    private var _selectedIndex: MutableStateFlow<Int> = MutableStateFlow(0)
+    val selectedIndex: StateFlow<Int> get() = _selectedIndex
+
+    fun setIndex(index: Int) {
+        _selectedIndex.value = index
+    }
+
     init {
         fetchData()
     }

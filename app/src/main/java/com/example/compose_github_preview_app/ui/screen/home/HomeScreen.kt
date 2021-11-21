@@ -6,8 +6,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,21 +39,35 @@ fun HomeScreen(
 ) {
     val user = homeViewModel.user.collectAsState().value
     val repositories = homeViewModel.repositories.collectAsState().value
+    val index = homeViewModel.selectedIndex.collectAsState().value
+
+    Logger.d("ボトムナビゲーション$index")
 
 
-    Scaffold(
-        topBar = { TopAppBar() },
-    ) {
-        HomeScreenBody(
-            user = user,
-            repositories = repositories,
-            onClickUserCard = {
-                navController.navigate("web-view/?url=${homeViewModel.userPageUrl}")
-            },
-            onClickRepository = {
-                navController.navigate("web-view/?url=${homeViewModel.getRepositoryPageUrl(it)}")
-            }
-        )
+    if (index == 0) {
+        Scaffold(
+            topBar = { TopAppBar() },
+            bottomBar = { BottomBar(homeViewModel = homeViewModel, index = index) }
+        ) {
+            HomeScreenBody(
+                user = user,
+                repositories = repositories,
+                onClickUserCard = {
+                    navController.navigate("web-view/?url=${homeViewModel.userPageUrl}")
+                },
+                onClickRepository = {
+                    navController.navigate("web-view/?url=${homeViewModel.getRepositoryPageUrl(it)}")
+                }
+            )
+        }
+    }
+    if (index == 1) {
+        Scaffold(
+            topBar = { TopAppBar() },
+            bottomBar = { BottomBar(homeViewModel = homeViewModel, index = index) }
+        ) {
+
+        }
     }
 }
 
@@ -56,6 +76,37 @@ fun TopAppBar() {
     TopAppBar(
         title = { Text("Github Preview")}
     )
+}
+@Composable
+fun BottomBar(homeViewModel: HomeViewModel, index: Int) {
+    BottomNavigation(elevation = 10.dp) {
+        BottomNavigationItem(icon = {
+            Icon(imageVector = Icons.Default.Home,"")
+        },
+            label = { Text(text = "Home") },
+            selected = (index == 0),
+            onClick = {
+                homeViewModel.setIndex(0)
+            })
+
+        BottomNavigationItem(icon = {
+            Icon(imageVector = Icons.Default.Favorite,"")
+        },
+            label = { Text(text = "Favorite") },
+            selected = (index == 1),
+            onClick = {
+                homeViewModel.setIndex(1)
+            })
+
+        BottomNavigationItem(icon = {
+            Icon(imageVector = Icons.Default.Person,"")
+        },
+            label = { Text(text = "Profile") },
+            selected = (index == 2),
+            onClick = {
+                homeViewModel.setIndex(2)
+            })
+    }
 }
 
 @Composable
